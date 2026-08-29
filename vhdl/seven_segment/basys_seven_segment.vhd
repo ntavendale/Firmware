@@ -15,47 +15,81 @@
 -- OTHER DEALINGS IN THE CODE.
 library ieee;
 use ieee.std_logic_1164.all;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
 use ieee.std_logic_unsigned.all;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+-- This project doesn't do much. Simply displays a four digit base 10 integer on the 
+-- seven segment display and increments it every second.. 
 
-entity Basys_7_Segment_Top is
+entity basys_seven_segment is
   port (
     clk : in std_logic;
     btnC : in std_logic; 
     an  : out std_logic_vector(3 downto 0);
     seg : out std_logic_vector(6 downto 0) -- GFEDCAB
   );
-end Basys_7_Segment_Top;
+end basys_seven_segment;
 
-architecture Behavioral of Basys_7_Segment_Top is
+architecture rtl of basys_seven_segment
+is
   -- counter for genrerating one second clockl enable
   signal one_second_counter: std_logic_vector(27 downto 0);
   -- one second enable
   signal one_second_enable : std_logic;
   signal displayed_number  : std_logic_vector(15 downto 0); -- HEX 0-F
+  signal r_reset           : std_logic;
+  
+  component generic_debounce_filter is
+    generic (
+      DEBOUNCE_LIMIT : integer := 1000000;
+      SIGNAl_COUNT: Integer := 1);
+    port (
+      i_clk           : in std_logic;
+      i_noisy_signal  : in std_logic_vector(SIGNAl_COUNT -1 downto 0);
+      o_debounced     : out std_logic_vector(SIGNAl_COUNT -1 downto 0)
+    );
+end component;
+  
+  component bcd_Counter_four_digit is
+    port (
+      i_reset     : in std_logic;
+      i_increment : in std_logic;
+      o_bcd       : out std_logic_vector(15 downto 0)
+    );
+  end component;
+  
+  component seven_segment_display is
+    generic (CYCLES_PER_ANODE : natural);
+    port (
+      i_clk       : in std_logic;
+      i_reset     : in std_logic;
+      i_displayed : in std_logic_vector(15 downto 0); -- compact BCD. 4 BCD Values of 4 bits each
+      o_anodes    : out std_logic_vector(3 downto 0);
+      o_segments  : out std_logic_vector(6 downto 0)
+    );
+  end component;
 begin
   
-  Seven_Segment : entity work.Seven_Segment_Display
-    generic map (CYCLES_PER_ANODE => 100000) -- 1 KHz   
+  Debouncer: generic_debounce_filter
     port map (
-      i_Clock     => clk,
-      i_Reset     => btnC,
-      i_Displayed => displayed_number,
-      o_Anodes    => an,
-      o_Segments  => seg
+      i_clk             => clk,
+      i_noisy_signal(0) => btnC,
+      o_debounced(0)    => r_reset
     );
     
-  BDC_Counter : entity work.BCD_Counter_4_Digit
+  Seven_Segment : seven_segment_display
+    generic map (CYCLES_PER_ANODE => 100000) -- 1 KHz   
     port map (
-      i_Increment  => one_second_enable,
-      i_Reset     => btnC,
+      i_clk       => clk,
+      i_reset     => r_reset,
+      i_displayed => displayed_number,
+      o_anodes    => an,
+      o_segments  => seg
+    );
+    
+  bcd_counter : bcd_Counter_four_digit
+    port map (
+      i_increment  => one_second_enable,
+      i_reset     => r_reset,
       o_BCD       => displayed_number
     );
   
@@ -75,15 +109,4 @@ begin
       end if;
     end if;
   end process;
-  --process(clk, btnC)
-  --begin
-  --  if btnC = '1' then
-  --    displayed_number <= (others => '0');
-  --  elsif rising_edge(clk) then
-  --    if one_second_enable = '1' then
-  --      displayed_number <= displayed_number + x"0001";
-  --    end if;
-  --  end if;
-  --end process;
-
-end Behavioral;
+end rtl;

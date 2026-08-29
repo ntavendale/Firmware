@@ -16,28 +16,18 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
-entity Seven_Segment_Display is
+entity seven_segment_display is
   generic (CYCLES_PER_ANODE : natural);
   port (
-    i_Clock     : in std_logic;
-    i_Reset     : in std_logic;
-    i_Displayed : in std_logic_vector(15 downto 0); -- compact BCD. 4 BCD Values of 4 bits each
-    o_Anodes    : out std_logic_vector(3 downto 0);
-    o_Segments  : out std_logic_vector(6 downto 0)
+    i_clk       : in std_logic;
+    i_reset     : in std_logic;
+    i_displayed : in std_logic_vector(15 downto 0); -- compact BCD. 4 BCD Values of 4 bits each
+    o_anodes    : out std_logic_vector(3 downto 0);
+    o_segments  : out std_logic_vector(6 downto 0)
   );
-end Seven_Segment_Display;
+end seven_segment_display;
 
-architecture RTL of Seven_Segment_Display is
+architecture rtl of seven_segment_display is
   constant ANODE_COUNT: natural := 4;
   signal bcd_value: std_logic_vector(3 downto 0);
   signal r_counter : natural range 0 to CYCLES_PER_ANODE - 1;  
@@ -54,35 +44,35 @@ begin
     --(https://digilent.com/reference/programmable-logic/basys-3/reference-manual)
     -- segment vector values are  GFEDCBA in the o_Segments output vector 
     case bcd_value is
-      when "0000" => o_Segments <= "1000000"; -- "0"     
-      when "0001" => o_Segments <= "1111001"; -- "1"
-      when "0010" => o_Segments <= "0100100"; -- "2"
-      when "0011" => o_Segments <= "0110000"; -- "3"
-      when "0100" => o_Segments <= "0011001"; -- "4"
-      when "0101" => o_Segments <= "0010010"; -- "5"
+      when "0000" => o_segments <= "1000000"; -- "0"     
+      when "0001" => o_segments <= "1111001"; -- "1"
+      when "0010" => o_segments <= "0100100"; -- "2"
+      when "0011" => o_segments <= "0110000"; -- "3"
+      when "0100" => o_segments <= "0011001"; -- "4"
+      when "0101" => o_segments <= "0010010"; -- "5"
        
-      when "0110" => o_Segments <= "0000010"; -- "6" 
-      when "0111" => o_Segments <= "1011000"; -- "7" 
-      when "1000" => o_Segments <= "0000000"; -- "8"     
-      when "1001" => o_Segments <= "0010000"; -- "9" 
-      when "1010" => o_Segments <= "0100000"; -- a
-      when "1011" => o_Segments <= "0000011"; -- b
-      when "1100" => o_Segments <= "1000110"; -- C
-      when "1101" => o_Segments <= "0100001"; -- d
-      when "1110" => o_Segments <= "0000110"; -- E
-      when "1111" => o_Segments <= "0001110"; -- F
-      when others => o_Segments <= "0001110"; -- F
+      when "0110" => o_segments <= "0000010"; -- "6" 
+      when "0111" => o_segments <= "1011000"; -- "7" 
+      when "1000" => o_segments <= "0000000"; -- "8"     
+      when "1001" => o_segments <= "0010000"; -- "9" 
+      when "1010" => o_segments <= "0100000"; -- a
+      when "1011" => o_segments <= "0000011"; -- b
+      when "1100" => o_segments <= "1000110"; -- C
+      when "1101" => o_segments <= "0100001"; -- d
+      when "1110" => o_segments <= "0000110"; -- E
+      when "1111" => o_segments <= "0001110"; -- F
+      when others => o_segments <= "0001110"; -- F
     end case;
   end process;
   
    -- Counting the number to be displayed on 4-digit 7-segment Display 
   -- on Basys 3 FPGA board  
-  process (i_Clock, i_Reset)
+  process (i_clk, i_Reset)
   begin
     if i_Reset = '1' then
       anode_counter <= 0;
       r_Counter     <= 0;
-    elsif rising_edge(i_Clock) then
+    elsif rising_edge(i_clk) then
       if r_Counter = CYCLES_PER_ANODE - 1 then
         -- reset counter
         r_Counter <= 0;
@@ -103,18 +93,18 @@ begin
     -- Digit turned on when it's anode is driven LOW!
     case anode_counter is
       when 0 => 
-        o_Anodes  <= "0111"; -- 7
-        bcd_value <= i_Displayed(15 downto 12);
+        o_anodes  <= "0111"; -- 7
+        bcd_value <= i_displayed(15 downto 12);
       when 1 => 
-        o_Anodes  <= "1011"; -- B
-        bcd_value <= i_Displayed(11 downto 8);
+        o_anodes  <= "1011"; -- B
+        bcd_value <= i_displayed(11 downto 8);
       when 2 => 
-        o_Anodes  <= "1101"; -- D
-        bcd_value <= i_Displayed(7 downto 4); 
+        o_anodes  <= "1101"; -- D
+        bcd_value <= i_displayed(7 downto 4); 
       when 3 => 
-        o_Anodes  <= "1110"; -- E
-        bcd_value <= i_Displayed(3 downto 0); 
+        o_anodes  <= "1110"; -- E
+        bcd_value <= i_displayed(3 downto 0); 
     end case;
   end process;  
   
-end RTL;
+end rtl;

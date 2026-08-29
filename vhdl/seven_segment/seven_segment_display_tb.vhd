@@ -15,6 +15,7 @@
 -- OTHER DEALINGS IN THE CODE.
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use ieee.std_logic_unsigned.all;
 use std.env.finish;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -25,29 +26,42 @@ use std.env.finish;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity BCD_Counter_4_Digit_Testbench is
+entity seven_segment_display_tb is
+--  Port ( );
+end seven_segment_display_tb;
 
-end BCD_Counter_4_Digit_Testbench;
-
-architecture Behavioral of BCD_Counter_4_Digit_Testbench is
-  signal r_Clk, r_Reset: std_logic := '0';
-  signal r_BCD: std_logic_vector(15 downto 0);
+architecture Behavioral of seven_segment_display_tb is
+  signal r_Clk, r_Reset : std_logic := '0';
+  signal displayed_number: std_logic_vector(15 downto 0); -- HEX 0-F
+  signal an  : std_logic_vector(3 downto 0);
+  signal seg : std_logic_vector(6 downto 0);
 begin
   r_Clk <= not r_Clk after 5 ns;
   
-  Unit_Under_Test :  entity work.BCD_Counter_4_Digit
+  Unit_Under_Test :  entity work.seven_segment_display
+    generic map (CYCLES_PER_ANODE => 100000)
     port map (
-      i_Reset => r_Reset, 
-      i_Increment => r_Clk,
-      o_BCD => r_BCD
+      i_clk => r_Clk,
+      i_reset => r_Reset,
+      i_displayed => displayed_number,
+      o_anodes => an,
+      o_segments => seg
     );
-    
+  
   process is  
   begin
-    for i in 0 to 999 loop 
-      wait until r_Clk = '1'; 
-    end loop;
+    displayed_number <= (others => '0');
+    wait until r_Clk = '1';
+    wait until r_Clk = '1';
+    wait until r_Clk = '1';
+    wait until r_Clk = '1';
+    displayed_number <= displayed_number + x"0001";
+    wait until r_Clk = '1';
+    wait until r_Clk = '1';
+    wait until r_Clk = '1';
+    
     finish;
   end process;
+     
 
 end Behavioral;

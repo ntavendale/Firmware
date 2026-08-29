@@ -25,15 +25,15 @@ use ieee.std_logic_unsigned.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity BCD_Counter_4_Digit is
+entity bcd_Counter_four_digit is
   port (
-    i_Reset     : in std_logic;
-    i_Increment : in std_logic;
-    o_BCD       : out std_logic_vector(15 downto 0)
+    i_reset     : in std_logic;
+    i_increment : in std_logic;
+    o_bcd       : out std_logic_vector(15 downto 0)
    );
-end BCD_Counter_4_Digit;
+end bcd_Counter_four_digit;
 
-architecture RTL of BCD_Counter_4_Digit is
+architecture rtl of bcd_Counter_four_digit is
   signal r_Digit_0: std_logic_vector(3 downto 0) := "0000"; 
   signal r_Digit_1: std_logic_vector(3 downto 0) := "0000";
   signal r_Digit_2: std_logic_vector(3 downto 0) := "0000";
@@ -75,5 +75,5 @@ begin
   o_BCD(11 downto 8)  <= r_Digit_2;
   o_BCD(7 downto 4)   <= r_Digit_1;
   o_BCD(3 downto 0)   <= r_Digit_0;
-end RTL;
+end rtl;
 

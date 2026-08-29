@@ -13,9 +13,9 @@
 -- SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN 
 -- ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE CODE OR THE USE OR 
 -- OTHER DEALINGS IN THE CODE.
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use ieee.std_logic_unsigned.all;
 use std.env.finish;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -26,42 +26,29 @@ use std.env.finish;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity Seven_Segment_Display_Sim is
---  Port ( );
-end Seven_Segment_Display_Sim;
+entity bcd_counter_four_digit_tb is
 
-architecture Behavioral of Seven_Segment_Display_Sim is
-  signal r_Clk, r_Reset : std_logic := '0';
-  signal displayed_number: std_logic_vector(15 downto 0); -- HEX 0-F
-  signal an  : std_logic_vector(3 downto 0);
-  signal seg : std_logic_vector(6 downto 0);
+end bcd_counter_four_digit_tb;
+
+architecture Behavioral of bcd_counter_four_digit_tb is
+  signal r_Clk, r_Reset: std_logic := '0';
+  signal r_BCD: std_logic_vector(15 downto 0);
 begin
   r_Clk <= not r_Clk after 5 ns;
   
-  Unit_Under_Test :  entity work.Seven_Segment_Display
-    generic map (CYCLES_PER_ANODE => 100000)
+  Unit_Under_Test :  entity work.bcd_counter_four_digit
     port map (
-      i_Clock => r_Clk,
-      i_Reset => r_Reset,
-      i_Displayed => displayed_number,
-      o_Anodes => an,
-      o_Segments => seg
+      i_reset => r_Reset, 
+      i_increment => r_Clk,
+      o_bcd => r_BCD
     );
-  
+    
   process is  
   begin
-    displayed_number <= (others => '0');
-    wait until r_Clk = '1';
-    wait until r_Clk = '1';
-    wait until r_Clk = '1';
-    wait until r_Clk = '1';
-    displayed_number <= displayed_number + x"0001";
-    wait until r_Clk = '1';
-    wait until r_Clk = '1';
-    wait until r_Clk = '1';
-    
+    for i in 0 to 999 loop 
+      wait until r_Clk = '1'; 
+    end loop;
     finish;
   end process;
-     
 
 end Behavioral;
