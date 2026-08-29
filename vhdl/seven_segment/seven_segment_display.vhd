@@ -16,6 +16,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
+
 entity seven_segment_display is
   generic (CYCLES_PER_ANODE : natural);
   port (
