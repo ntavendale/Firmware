@@ -57,3 +57,14 @@ source uart_loopback.tcl
 ```
 
 Note the use of the "/" as the path delimiter.
+
+### hygrometer_reader
+
+Basic proof of concept firmware project that runs on Basys 3 board and pulls temp/humidity data over serial comms using a software app. Also allows software to set resolution.
+
+```
+C:/Development/Firmware
+source hygrometer_reader.tcl
+```
+
+Note the use of the "/" as the path delimiter.
