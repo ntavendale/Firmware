@@ -103,6 +103,7 @@ end;
 procedure TfmUartMain.comPortTriggerAvail(CP: TObject; Count: Word);
 var
   LByteArray: array [0..3] of Byte;
+  LData: Cardinal;
 begin
   if Count <> 4 then
   begin
@@ -123,7 +124,13 @@ begin
 
   var LTemperature := (( LTempData/ 65536) * 165.00) - 40.0;
   var LHumidity := (LHumidityData / 65536) * 100.00;
-  lbOutput.Caption := String.Format('Temperature : %.2f deg C. Humidity: %.2f %%', [LTemperature, LHumidity]);
+
+  LData := LByteArray[3];
+  LData := (LData shl 8) or LByteArray[2];
+  LData := (LData shl 8) or LByteArray[1];
+  LData := (LData shl 8) or LByteArray[0];
+
+  lbOutput.Caption := String.Format('Temperature : %.2f deg C. Humidity: %.2f %% (Data: 0x%.8x)', [LTemperature, LHumidity, LData]);
 end;
 
 procedure TfmUartMain.btnSetResolutionClick(Sender: TObject);

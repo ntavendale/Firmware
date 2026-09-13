@@ -1,4 +1,4 @@
--- Copyright 2025 Nigel Tavendale
+-- Copyright 2026 Nigel Tavendale
 -- Permission is hereby granted, free of charge, to any person obtaining a copy of this code 
 -- associated documentation files (the "Code"), to deal in the Code without restriction, including 
 -- without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
@@ -41,7 +41,7 @@ begin
   process(bcd_value)
   begin
     -- Segment turned on when it's value is driven LOW!
-    -- On basys 3 the seven segments of ecach display egments are labled A to G 
+    -- On Basys3 the seven segments of each display digit are labeled A to G 
     --(https://digilent.com/reference/programmable-logic/basys-3/reference-manual)
     -- segment vector values are  GFEDCBA in the o_Segments output vector 
     case bcd_value is
